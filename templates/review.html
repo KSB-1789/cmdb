@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Review {{ movie.title }}</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div>
+        {{ form.content.label }}<br>
+        {{ form.content(rows=5, cols=40) }}<br>
+        {% for error in form.content.errors %}
+        <span class="error">{{ error }}</span>
+        {% endfor %}
+    </div>
+    <div>
+        {{ form.rating.label }}<br>
+        {{ form.rating() }}<br>
+        {% for error in form.rating.errors %}
+        <span class="error">{{ error }}</span>
+        {% endfor %}
+    </div>
+    <div>
+        <input type="submit" value="Submit Review">
+    </div>
+</form>
+{% endblock %} 

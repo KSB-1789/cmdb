@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <img src="{{ url_for('static', filename=movie.poster_url) }}" alt="{{ movie.title }}" class="img-fluid rounded">
+        </div>
+        <div class="col-md-8">
+            <h2 class="mb-3">{{ movie.title }} ({{ movie.release_year }})</h2>
+            <p class="lead">IMDb Rating: <strong>{{ movie.imdb_rating }}</strong></p>
+            <p>{{ movie.description }}</p>
+            <a href="{{ url_for('add_to_watchlist', movie_id=movie.id) }}" class="btn btn-secondary mb-3">Add to Watchlist</a>
+            
+            <h3 class="mt-4">Reviews</h3>
+            <ul class="list-group mb-4">
+                {% for review in reviews %}
+                <li class="list-group-item">
+                    <strong>Rating: {{ review.rating }}</strong>
+                    <p>{{ review.content }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <h3 class="mt-4">Add Your Review</h3>
+            <form method="POST" class="mb-4">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.rating.label(class="form-label") }}
+                    {{ form.rating(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.content.label(class="form-label") }}
+                    {{ form.content(class="form-control") }}
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

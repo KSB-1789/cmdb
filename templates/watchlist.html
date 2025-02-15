@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Watchlist</h2>
+    <div class="row">
+        {% for movie in movies %}
+        <div class="col-md-4 movie-card">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename=movie.poster_url) }}" class="card-img-top" alt="{{ movie.title }}" loading="lazy">
+                <div class="card-body">
+                    <h5 class="movie-title">{{ movie.title }} ({{ movie.release_year }})</h5>
+                    <p class="movie-rating">IMDb Rating: {{ movie.imdb_rating }}</p>
+                    <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
