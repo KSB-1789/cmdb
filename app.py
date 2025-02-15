@@ -3,12 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
-from models import db, Movie, User, Watchlist  # Ensure you import your db and models
+from models import db, Movie, User, Watchlist  
 from forms import LoginForm, RegisterForm, ReviewForm, AddMovieForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///imdb_clone.db'  # Ensure this matches your database file
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///imdb_clone.db' 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -32,7 +32,7 @@ def index():
     genres = db.session.query(Movie.genre).distinct().all()
     release_years = db.session.query(Movie.release_year).distinct().all()
 
-    # Flatten the list of tuples
+    
     genres = [g[0] for g in genres if g[0]]
     release_years = [y[0] for y in release_years if y[0]]
 
@@ -50,7 +50,7 @@ def login():
     if form.validate_on_submit():
         print("Form validation passed!")
         user = User.query.filter_by(email=form.email.data).first()
-        print(f"User found: {user}")  # Debugging print
+        print(f"User found: {user}") 
         
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
@@ -62,7 +62,7 @@ def login():
 
     else:
         print("Form validation failed!")
-        print(form.errors)  # Print validation errors
+        print(form.errors)  
 
     return render_template('login.html', form=form)
 
@@ -80,7 +80,7 @@ def register():
     if form.validate_on_submit():
         print("Form validation passed!")
         
-        # Check if user already exists
+    
         existing_user = User.query.filter_by(email=form.email.data).first()
         if existing_user:
             print("User already exists!")
@@ -106,7 +106,7 @@ def register():
 
     else:
         print("Form validation failed!")
-        print(form.errors)  # Print errors if validation fails
+        print(form.errors) 
 
     return render_template('register.html', form=form)
 
@@ -201,9 +201,9 @@ def add_movie():
             description=form.description.data,
             release_year=form.release_year.data,
             genre=form.genre.data,
-            imdb_rating=0.0,  # Default rating
-            poster_url='',  # Default or placeholder URL
-            release_date=''  # Default or placeholder date
+            imdb_rating=0.0, 
+            poster_url='',  
+            release_date=''  
         )
         db.session.add(new_movie)
         db.session.commit()

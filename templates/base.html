@@ -12,9 +12,25 @@
         }
         .navbar {
             margin-bottom: 20px;
+            background-color: #212529; /* Darker color, closer to black */
         }
         .navbar-brand img {
             border-radius: 50%;
+        }
+        .navbar-nav .nav-link {
+            color: #ffffff;
+            font-weight: 500;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #ffc107; /* Gold color on hover */
+            transform: scale(1.1); /* Slightly enlarge on hover */
+        }
+        .navbar-toggler {
+            border-color: #ffffff;
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255, 255, 255, 0.5%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
         }
         .movie-card img {
             height: 300px;
@@ -26,7 +42,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <img src="{{ url_for('static', filename='imdb_logo.png') }}" width="50" height="50" alt="IMDb Logo">
