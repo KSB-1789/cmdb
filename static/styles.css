@@ -23,6 +23,8 @@ body {
     color: #333;
 }
 
+
+
 .movie-rating {
     color: #ffcc00;
     font-weight: bold;
@@ -34,12 +36,38 @@ body {
 }
 
 .btn-primary {
+    display: flex;
+    justify-content: center;
     background-color: #ffcc00;
     border-color: #ffcc00;
     color: #333;
+    margin-top: 20px;
+    width: 100%;
 }
 
 .btn-primary:hover {
     background-color: #e6b800;
     border-color: #e6b800;
 } 
+
+.form-box {
+    font-family: 'Roboto', sans-serif;
+    max-width: 600px;
+    margin: 10px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+}
+
+
+.movie-box-container {
+    background-color: #ebe9e9;
+}

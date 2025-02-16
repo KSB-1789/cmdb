@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Top 25 Movies</h2>
+<div class="container movie-box-container" style="padding-left: 40px; padding-right: 40px;">
+    <h2 class="mb-4 pt-4">Top 25 Movies</h2>
     
     
     {% if current_user.is_authenticated and current_user.is_admin %}
@@ -35,7 +35,7 @@
                 </select>
             </div>
             <div class="col-md-2">
-                <button type="button" class="btn btn-primary w-100" onclick="applyFilters()">Filter</button>
+                <button type="button" class="btn btn-primary w-100" onclick="applyFilters()" style="margin-top: 0px;">Filter</button>
             </div>
         </div>
     </form>

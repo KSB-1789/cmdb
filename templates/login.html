@@ -1,25 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Login</h1>
-<form method="POST">
-    {{ form.hidden_tag() }}
-    <div>
-        {{ form.email.label }}<br>
-        {{ form.email(size=32) }}<br>
-        {% for error in form.email.errors %}
-        <span class="error">{{ error }}</span>
-        {% endfor %}
+<div class="container mt-5">
+    <div class="form-box">
+        <h2 class="mb-4">Sign in to Your Account</h2>
+        <form method="POST" action="/login">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="email">Email or mobile phone number</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <div class="text-center mt-3">
+                <a href="#" class="small">Forgot password?</a>
+            </div>
+        </form>
+        <hr>
+        <div class="text-center">
+            <p class="small">New to our site? <a href="/register">Create an account</a></p>
+        </div>
     </div>
-    <div>
-        {{ form.password.label }}<br>
-        {{ form.password(size=32) }}<br>
-        {% for error in form.password.errors %}
-        <span class="error">{{ error }}</span>
-        {% endfor %}
-    </div>
-    <div>
-        <input type="submit" value="login">
-    </div>
-</form>
+</div>
 {% endblock %} 

@@ -11,7 +11,7 @@
             background-color: #f8f9fa;
         }
         .navbar {
-            margin-bottom: 20px;
+            margin-bottom: 0px;
             background-color: #212529; /* Darker color, closer to black */
         }
         .navbar-brand img {
@@ -46,7 +46,7 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <img src="{{ url_for('static', filename='imdb_logo.png') }}" width="50" height="50" alt="IMDb Logo">
-                IMDb Clone
+                CMDb
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -75,7 +75,7 @@
             </div>
         </div>
     </nav>
-    <div class="container mt-4">
+    <div class="container">
         {% block content %}{% endblock %}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
