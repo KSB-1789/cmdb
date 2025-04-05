@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Watchlist</h2>
+    <ul class="list-group">
+        {% for watchlist_entry in watchlist %}
+        <li class="list-group-item d-flex align-items-center">
+            <img src="{% static watchlist_entry.movie.poster_url %}" alt="{{ watchlist_entry.movie.title }}" class="img-fluid rounded me-3" style="max-width: 100px;">
+            <div>
+                <h5>{{ watchlist_entry.movie.title }} ({{ watchlist_entry.movie.release_year }})</h5>
+                <p>Added on: {{ watchlist_entry.added_at }}</p>
+            </div>
+        </li>
+        {% empty %}
+            <p>Your watchlist is empty.</p>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,9 +1,28 @@
-{% extends 'movies/base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
+<div class="container mt-5">
+    <div class="form-box">
+        <h2 class="mb-4">Sign in to Your Account</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="email">Email or mobile phone number</label>
+                <input type="email" class="form-control" id="email" name="username" placeholder="Enter email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <div class="text-center mt-3">
+                <a href="#" class="small">Forgot password?</a>
+            </div>
+        </form>
+        <hr>
+        <div class="text-center">
+            <p class="small">New to our site? <a href="{% url 'movies:register' %}">Create an account</a></p>
+        </div>
+    </div>
+</div>
 {% endblock %}

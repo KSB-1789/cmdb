@@ -1,3 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from profiles.forms import LoginForm, RegisterForm
 
-# Create your views here.
+def index(request):
+    return render(request, 'index.html')

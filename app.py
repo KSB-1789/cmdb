@@ -4,6 +4,8 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from models import db, Movie, User, Watchlist  
+from werkzeug.utils import secure_filename
+import os
 from forms import LoginForm, RegisterForm, ReviewForm, AddMovieForm
 
 app = Flask(__name__)
@@ -13,7 +15,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
 
 from models import User, Movie, Review
 from forms import LoginForm, RegisterForm, ReviewForm
@@ -22,11 +23,28 @@ from forms import LoginForm, RegisterForm, ReviewForm
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-@app.before_first_request
-def create_tables():
+
+def create_test_data():
     with app.app_context():
         db.create_all()
 
+        
+        if not User.query.filter_by(username='admin').first():
+            admin_user = User(username='admin', email='admin@example.com', password=generate_password_hash('admin'), is_admin=True)
+            db.session.add(admin_user)
+
+        if not User.query.filter_by(username='user1').first():
+            user1 = User(username='user1', email='user1@example.com', password=generate_password_hash('password'))
+            db.session.add(user1)
+
+        if not Movie.query.filter_by(title='Movie 1').first():
+            movie1 = Movie(title='Movie 1', description='Description for Movie 1', release_year=2020, imdb_rating=7.5, poster_url='/static/images/movie1.jpg', genre='Action', release_date='2020-01-01')
+            db.session.add(movie1)
+
+        db.session.commit()
+
+
+login_manager.login_view = 'login'
 @app.route('/')
 def index():
     genres = db.session.query(Movie.genre).distinct().all()
@@ -143,59 +161,55 @@ def movie_detail(movie_id):
     reviews = Review.query.filter_by(movie_id=movie.id).all()
     return render_template('movie_detail.html', movie=movie, form=form, reviews=reviews)
 
-@app.route('/movie/<int:movie_id>/review', methods=['GET', 'POST'])
-@login_required
-def review(movie_id):
-    movie = Movie.query.get_or_404(movie_id)
-    form = ReviewForm()
-    if form.validate_on_submit():
-        review = Review(
-            content=form.content.data,
-            rating=form.rating.data,
-            user_id=current_user.id,
-            movie_id=movie.id
-        )
-        db.session.add(review)
-        db.session.commit()
-        flash('Your review has been added')
-        return redirect(url_for('movie_detail', movie_id=movie.id))
-    return render_template('review.html', form=form, movie=movie)
-
 @app.route('/api/movies')
 def get_movies():
     offset = request.args.get('offset', 0, type=int)
     limit = request.args.get('limit', 6, type=int)
     search = request.args.get('search', '', type=str)
     genre = request.args.get('genre', '', type=str)
-    release_year = request.args.get('release_year', '', type=str)
+    release_year = request.args.get('release_year', '', type=int)
+    order_by = request.args.get('orderBy', 'title', type=str)  
+    order = request.args.get('order', 'asc', type=str)
 
-    query = Movie.query
-
+    query = Movie.query.order_by(getattr(getattr(Movie, order_by), order)()) if hasattr(Movie, order_by) else Movie.query
     if search:
         query = query.filter(Movie.title.ilike(f'%{search}%'))
     if genre:
         query = query.filter(Movie.genre.ilike(f'%{genre}%'))
-    if release_year:
-        query = query.filter(Movie.release_year == int(release_year))
+    if release_year !=0:
+        query = query.filter(Movie.release_year == release_year)
 
     movies = query.offset(offset).limit(limit).all()
+    total = Movie.query.count()
     return jsonify([{
         'id': movie.id,
         'title': movie.title,
         'release_year': movie.release_year,
         'imdb_rating': movie.imdb_rating,
-        'poster_url': movie.poster_url
-    } for movie in movies])
+        'poster_url': movie.poster_url,
+        'genre': movie.genre,
+        'description': movie.description
+    } for movie in movies]), {'X-Total-Count': total}
+
+
+
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'images')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/add_movie', methods=['GET', 'POST'])
 @login_required
 def add_movie():
-    if not current_user.is_admin:
-        flash('You do not have permission to access this page.')
-        return redirect(url_for('index'))
-
     form = AddMovieForm()
     if form.validate_on_submit():
+        file = form.poster.data
+        filename = 'default.jpg'
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
         new_movie = Movie(
             title=form.title.data,
             description=form.description.data,
@@ -207,10 +221,44 @@ def add_movie():
         )
         db.session.add(new_movie)
         db.session.commit()
-        flash('Movie added successfully!')
+        flash('Movie added successfully')
         return redirect(url_for('index'))
 
-    return render_template('add_movie.html', form=form)
+    return render_template('add_movie.html', form=form, errors=form.errors)
+
+@app.route('/edit_movie/<int:movie_id>', methods=['GET', 'POST'])
+@login_required
+def edit_movie(movie_id):
+    movie = Movie.query.get_or_404(movie_id)
+    form = AddMovieForm(obj=movie)
+    if form.validate_on_submit():
+        file = form.poster.data
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            movie.poster_url = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        movie.title = form.title.data
+        movie.description = form.description.data
+        movie.release_year = form.release_year.data
+        movie.genre = form.genre.data
+        db.session.commit()
+        flash('Movie updated successfully')
+        return redirect(url_for('index'))
+    return render_template('edit_movie.html', form=form, movie=movie, errors=form.errors)
+
+@app.route('/delete_movie/<int:movie_id>')
+@login_required
+def delete_movie(movie_id):
+    movie = Movie.query.get_or_404(movie_id)
+    db.session.delete(movie)
+    db.session.commit()
+    flash('Movie deleted successfully')
+    return redirect(url_for('index'))
+
+
+
+
 
 @app.route('/watchlist')
 @login_required
@@ -236,7 +284,7 @@ def add_to_watchlist(movie_id):
         flash('Movie is already in your watchlist.')
     return redirect(url_for('movie_detail', movie_id=movie_id))
 
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True) 
+    create_test_data()  
+    app.run(debug=True)
