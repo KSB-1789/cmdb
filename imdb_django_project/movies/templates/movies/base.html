@@ -1,24 +1,60 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}IMDB Clone{% endblock %}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CMDb - Your Movie Database{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <nav><a href="{% url 'movies:index' %}">Home</a></nav>
+    <header class="imdb-header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="{% url 'movies:index' %}">CMDb</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="{% url 'movies:index' %}">Home</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'movies:watchlist' %}">Watchlist</a></li>
+                        <li><a href="{% url 'movies:my_ratings' %}">My Ratings</a></li>
+                        <li><a href="{% url 'profiles:profile' %}">Profile</a></li>
+                        <li>
+                            <form method="post" action="{% url 'profiles:logout' %}">
+                                {% csrf_token %}
+                                <button type="submit">Logout</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li><a href="{% url 'profiles:login' %}">Login</a></li>
+                        <li><a href="{% url 'profiles:register' %}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
     </header>
-    <div class="messages">
-        {% if messages %}
-            {% for message in messages %}
-                <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    </div>
 
-    {% block content %}
-    {% endblock %}
+    <main>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="imdb-footer">
+        <div class="footer-container">
+            <p>&copy; 2025 CMDb. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>

@@ -7,57 +7,47 @@ from .models import Movie, Review, Watchlist
 from .forms import ReviewForm, MovieForm
 from profiles.forms import RegisterForm
 from django.db.models import Q
+from django.contrib import messages
 
 def index(request):
-    movies = Movie.objects.all().order_by('title')
-    # Filters
+    movies = Movie.objects.all().order_by('-rating')
+    genres = Movie.objects.values_list('genre', flat=True).distinct()
+    
     search_query = request.GET.get('search', '')
     genre_query = request.GET.get('genre', '')
-    release_year_query = request.GET.get('release_year', '')
-
+    
     if search_query:
         movies = movies.filter(Q(title__icontains=search_query))
     if genre_query:
-        movies = movies.filter(genre__icontains=genre_query)
-    if release_year_query:
-        movies = movies.filter(release_year=release_year_query)
-
-    # Pagination
-    paginator = Paginator(movies, 8)
-    page = request.GET.get('page')
-    try:
-        movies = paginator.page(page)
-    except PageNotAnInteger:
-        movies = paginator.page(1)
-    except EmptyPage:
-        movies = paginator.page(paginator.num_pages)
-
-    # Genres and years
-    genres = Movie.objects.values_list('genre', flat=True).distinct()
-    release_years = Movie.objects.values_list('release_year', flat=True).distinct().order_by('release_year')
-
+        movies = movies.filter(genre=genre_query)
+    
     context = {
         'movies': movies,
         'genres': genres,
-        'release_years': release_years,
+        'search_query': search_query,
+        'genre_query': genre_query,
     }
     return render(request, 'movies/index.html', context)
 
 
 def movie_detail(request, movie_id):
-    movie = get_object_or_404(Movie, pk=movie_id)
-    reviews = Review.objects.filter(movie=movie).order_by('-created_at')
-    if request.method == 'POST':
-        form = ReviewForm(request.POST or None)
+    movie = get_object_or_404(Movie, id=movie_id)
+    
+    if request.method == 'POST' and request.user.is_authenticated:
+        form = ReviewForm(request.POST)
         if form.is_valid():
             review = form.save(commit=False)
-            review.movie = movie
             review.user = request.user
+            review.movie = movie
             review.save()
-            return redirect('movies:movie_detail', movie_id=movie_id)
+            messages.success(request, 'Your review has been added!')
+            return redirect('movies:movie_detail', movie_id=movie.id)
     else:
         form = ReviewForm()
-
+    
+    # Get all reviews for this movie
+    reviews = movie.reviews.all().order_by('-created_at')
+    
     context = {
         'movie': movie,
         'reviews': reviews,
@@ -87,12 +77,16 @@ class CustomLoginView(LoginView):
 @login_required
 def add_movie(request):
     if request.method == 'POST':
-        form = MovieForm(request.POST)
+        form = MovieForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('movies:index')
+            movie = form.save(commit=False)
+            movie.added_by = request.user
+            movie.save()
+            messages.success(request, 'Movie added successfully!')
+            return redirect('movies:movie_detail', movie_id=movie.id)
     else:
         form = MovieForm()
+    
     return render(request, 'movies/add_movie.html', {'form': form})
 
 
@@ -103,14 +97,50 @@ def logout_view(request):
 
 @login_required
 def my_ratings(request):
-    reviews = Review.objects.filter(user=request.user).order_by('-created_at')
-    context = {'reviews': reviews}
-    return render(request, 'movies/my_ratings.html', context)
+    reviews = Review.objects.filter(user=request.user)
+    return render(request, 'movies/my_ratings.html', {'reviews': reviews})
 
 
 @login_required
 def watchlist(request):
-    watchlist_items = Watchlist.objects.filter(user=request.user)
-    movies = [item.movie for item in watchlist_items]
-    context = {'movies': movies}
-    return render(request, 'movies/watchlist.html', context)
+    movies = Movie.objects.filter(watchlist_entries__user=request.user)
+    return render(request, 'movies/watchlist.html', {'movies': movies})
+
+
+@login_required
+def ratings(request):
+    reviews = Review.objects.filter(user=request.user).order_by('-created_at')
+    context = {
+        'reviews': reviews,
+    }
+    return render(request, 'movies/ratings.html', context)
+
+
+def top_rated(request):
+    movies = Movie.objects.all().order_by('-rating')[:25]
+    return render(request, 'movies/movie_list.html', {
+        'movies': movies,
+        'title': 'Top Rated Movies'
+    })
+
+
+def most_popular(request):
+    movies = Movie.objects.all().order_by('-views')[:25]
+    return render(request, 'movies/movie_list.html', {
+        'movies': movies,
+        'title': 'Most Popular Movies'
+    })
+
+
+@login_required
+def add_to_watchlist(request, movie_id):
+    movie = get_object_or_404(Movie, id=movie_id)
+    watchlist_entry, created = Watchlist.objects.get_or_create(user=request.user, movie=movie)
+    
+    if not created:
+        watchlist_entry.delete()
+        messages.success(request, f'"{movie.title}" removed from your watchlist.')
+    else:
+        messages.success(request, f'"{movie.title}" added to your watchlist.')
+    
+    return redirect('movies:index')

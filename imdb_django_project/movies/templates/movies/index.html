@@ -1,5 +1,75 @@
-{% extends 'base.html' %}
+{% extends 'movies/base.html' %}
+{% load static %}
+
 {% block content %}
-    <h1>Welcome to the index page!</h1>
-    <p>This is the main page of our application.</p>
+<div class="container">
+    <h1>CMDb</h1>
+    <p class="subtitle">Your Ultimate Movie Database</p>
+
+    <form method="GET" class="search-form">
+        <input type="text" name="search" placeholder="Search for movies..." class="search-input" value="{{ request.GET.search }}">
+        <select name="genre" class="search-select">
+            <option value="">All Genres</option>
+            <option value="Action" {% if request.GET.genre == "Action" %}selected{% endif %}>Action</option>
+            <option value="Adventure" {% if request.GET.genre == "Adventure" %}selected{% endif %}>Adventure</option>
+            <option value="Animation" {% if request.GET.genre == "Animation" %}selected{% endif %}>Animation</option>
+            <option value="Biography" {% if request.GET.genre == "Biography" %}selected{% endif %}>Biography</option>
+            <option value="Comedy" {% if request.GET.genre == "Comedy" %}selected{% endif %}>Comedy</option>
+            <option value="Crime" {% if request.GET.genre == "Crime" %}selected{% endif %}>Crime</option>
+            <option value="Drama" {% if request.GET.genre == "Drama" %}selected{% endif %}>Drama</option>
+            <option value="Fantasy" {% if request.GET.genre == "Fantasy" %}selected{% endif %}>Fantasy</option>
+            <option value="Horror" {% if request.GET.genre == "Horror" %}selected{% endif %}>Horror</option>
+            <option value="Mystery" {% if request.GET.genre == "Mystery" %}selected{% endif %}>Mystery</option>
+            <option value="Romance" {% if request.GET.genre == "Romance" %}selected{% endif %}>Romance</option>
+            <option value="Sci-Fi" {% if request.GET.genre == "Sci-Fi" %}selected{% endif %}>Sci-Fi</option>
+            <option value="Thriller" {% if request.GET.genre == "Thriller" %}selected{% endif %}>Thriller</option>
+            <option value="War" {% if request.GET.genre == "War" %}selected{% endif %}>War</option>
+            <option value="Western" {% if request.GET.genre == "Western" %}selected{% endif %}>Western</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    {% if user.is_authenticated %}
+    <a href="{% url 'movies:add_movie' %}" class="btn btn-primary add-movie-btn">Add Movie</a>
+    {% endif %}
+
+    <h2>Top 25 Movies</h2>
+    
+    <div class="movies-grid">
+        {% for movie in movies %}
+        <div class="movie-card">
+            {% if movie.poster %}
+            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="movie-poster">
+            {% else %}
+            <div class="movie-poster placeholder">
+                <span class="placeholder-text">No Poster Available</span>
+            </div>
+            {% endif %}
+            <div class="movie-info">
+                <h3><a href="{% url 'movies:movie_detail' movie.id %}">{{ movie.title }}</a></h3>
+                <p class="year">({{ movie.year }})</p>
+                <div class="rating-container">
+                    <span class="rating">{{ movie.rating|floatformat:1 }}/10</span>
+                    <a href="{% url 'movies:movie_detail' movie.id %}#reviews" class="review-count">
+                        {{ movie.review_set.count }} review{{ movie.review_set.count|pluralize }}
+                    </a>
+                </div>
+                <p class="genre">{{ movie.genre }}</p>
+                {% if user.is_authenticated %}
+                <form method="POST" action="{% url 'movies:add_to_watchlist' movie.id %}" style="margin-top: auto;">
+                    {% csrf_token %}
+                    {% if movie in user.watchlist_movies.all %}
+                    <button type="submit" class="btn btn-secondary">Remove from Watchlist</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-primary">Add to Watchlist</button>
+                    {% endif %}
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <p>No movies found.</p>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

@@ -1,28 +1,30 @@
-{% extends 'base.html' %}
+{% extends 'movies/base.html' %}
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>My Ratings</h2>
+<div class="container">
+    <h1>My Ratings</h1>
     {% if reviews %}
-    <ul class="list-group">
-        {% for review in reviews %}
-        <li class="list-group-item">
-            <div class="row">
-                <div class="col-md-2">
-                    <img src="{% static review.movie.poster_url %}" alt="{{ review.movie.title }}" class="img-fluid">
+        <div class="reviews-list">
+            {% for review in reviews %}
+                <div class="review-card">
+                    <div class="review-header">
+                        <h2><a href="{% url 'movies:movie_detail' review.movie.id %}">{{ review.movie.title }}</a></h2>
+                        <div class="review-meta">
+                            <span class="rating">{{ review.rating }}/10</span>
+                            <span class="date">{{ review.created_at|date:"F j, Y" }}</span>
+                        </div>
+                    </div>
+                    {% if review.comment %}
+                        <div class="review-comment">
+                            {{ review.comment }}
+                        </div>
+                    {% endif %}
                 </div>
-                <div class="col-md-10">
-                    <h4>{{ review.movie.title }}</h4>
-                    <p>Rating: {{ review.rating }}</p>
-                    <p>Review: {{ review.content }}</p>
-                </div>
-            </div>
-        </li>
-        {% endfor %}
-    </ul>
+            {% endfor %}
+        </div>
     {% else %}
-    <p>You haven't rated any movies yet.</p>
+        <p class="no-reviews">You haven't rated any movies yet.</p>
     {% endif %}
 </div>
 {% endblock %}

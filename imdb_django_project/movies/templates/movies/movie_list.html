@@ -1,0 +1,36 @@
+{% extends 'movies/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="section-header">
+        <h2>{{ title }}</h2>
+    </div>
+
+    <div class="movies-grid">
+        {% for movie in movies %}
+            <div class="movie-card">
+                {% with image_path="images/"|add:movie.title|lower|add:"_poster.jpg" %}
+                    <img src="{% static image_path %}" alt="{{ movie.title }}" class="movie-poster" onerror="this.src='{% static 'images/default_poster.jpg' %}'">
+                {% endwith %}
+                <div class="movie-info">
+                    <h2><a href="{% url 'movies:movie_detail' movie.id %}">{{ movie.title }}</a></h2>
+                    <p class="year">({{ movie.release_year }})</p>
+                    <div class="rating-container">
+                        <span class="rating">⭐ {{ movie.imdb_rating }}/10</span>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'movies:movie_detail' movie.id %}#reviews" class="review-count">
+                                <i class="fas fa-comment"></i> {{ movie.reviews_set.count }} reviews
+                            </a>
+                        {% endif %}
+                    </div>
+                    {% if movie.genre %}
+                        <p class="genre">{{ movie.genre }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p class="no-movies">No movies found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

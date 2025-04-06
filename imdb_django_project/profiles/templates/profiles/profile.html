@@ -1,0 +1,32 @@
+{% extends 'movies/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="profile-container">
+        <h2>Your Profile</h2>
+        <div class="profile-info">
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email|default:"Not set" }}</p>
+            <p><strong>Date Joined:</strong> {{ user.date_joined|date:"F j, Y" }}</p>
+        </div>
+        <div class="profile-stats">
+            <h3>Your Activity</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">{{ user.added_movies.count }}</span>
+                    <span class="stat-label">Movies Added</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ user.reviews.count }}</span>
+                    <span class="stat-label">Reviews Written</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ user.watchlist.count }}</span>
+                    <span class="stat-label">Watchlist Items</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

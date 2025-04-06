@@ -1,49 +1,75 @@
-{% extends 'base.html' %}
+{% extends 'movies/base.html' %}
 {% load static %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>{{ movie.title }}</h2>
-    <p><strong>Description:</strong> {{ movie.description }}</p>
-    <p><strong>Release Year:</strong> {{ movie.release_year }}</p>
-    <p><strong>Genre:</strong> {{ movie.genre }}</p>
-    <p><strong>IMDb Rating:</strong> {{ movie.imdb_rating }}</p>
-    {% if movie.poster_url %}
-    <img src="{% static movie.poster_url %}" alt="{{ movie.title }} Poster" class="img-fluid">
-    {% endif %}
-
-    <div class="mt-4">
-        <h3>Add a Review</h3>
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="rating">Rating</label>
-                <input type="number" class="form-control" id="rating" name="rating" min="1" max="10" required>
+<div class="movie-detail">
+    <div class="movie-detail-container">
+        <div class="movie-poster-container">
+            {% if movie.poster %}
+            <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="movie-detail-poster">
+            {% else %}
+            <div class="movie-detail-poster placeholder">
+                <span class="placeholder-text">No Poster Available</span>
             </div>
-            <div class="form-group">
-                <label for="content">Content</label>
-                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+            {% endif %}
+        </div>
+        
+        <div class="movie-detail-info">
+            <h1>{{ movie.title }}</h1>
+            <div class="movie-detail-meta">
+                <span class="movie-detail-year">({{ movie.year }})</span>
+                <span class="movie-detail-rating">{{ movie.rating|floatformat:1 }}/10</span>
+                <span class="movie-detail-genre">{{ movie.genre }}</span>
             </div>
-            <button type="submit" class="btn btn-primary">Submit Review</button>
-        </form>
-    </div>
 
-    <div class="mt-4">
-        <h3>Reviews</h3>
-        {% if reviews %}
-        <ul>
-            {% for review in reviews %}
-            <li>
-                <p><strong>Rating:</strong> {{ review.rating }}</p>
-                <p><strong>Content:</strong> {{ review.content }}</p>
-                <p><strong>User:</strong> {{ review.user.username }}</p>
-                <p><strong>Date:</strong> {{ review.created_at }}</p>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No reviews yet.</p>
-        {% endif %}
+            {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'movies:add_to_watchlist' movie.id %}">
+                {% csrf_token %}
+                {% if movie in user.watchlist_movies.all %}
+                <button type="submit" class="watchlist-btn remove">Remove from Watchlist</button>
+                {% else %}
+                <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                {% endif %}
+            </form>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            <div class="review-form">
+                <h3>Write a Review</h3>
+                <form method="POST" action="{% url 'movies:movie_detail' movie.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="rating">Rating (1-10):</label>
+                        {{ form.rating }}
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Your Review:</label>
+                        {{ form.comment }}
+                    </div>
+                    <button type="submit">Submit Review</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="reviews-section">
+                <h2>Reviews</h2>
+                <div class="review-list">
+                    {% for review in movie.reviews.all %}
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-rating">{{ review.rating }}/10</span>
+                            <span class="review-date">{{ review.created_at|date:"F j, Y" }}</span>
+                        </div>
+                        <div class="review-content">
+                            {{ review.comment }}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No reviews yet. Be the first to review this movie!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

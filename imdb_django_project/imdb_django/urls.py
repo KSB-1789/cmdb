@@ -16,9 +16,16 @@ Including another URLconf
 """
 from django.urls import include, path
 from django.contrib import admin
+from django.shortcuts import redirect
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', lambda request: redirect('movies:index'), name='root'),
     path('admin/', admin.site.urls),
     path('movies/', include('movies.urls', namespace='movies')),
     path('profiles/', include('profiles.urls', namespace='profiles')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
