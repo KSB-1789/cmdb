@@ -18,7 +18,7 @@
                         </h3>
                         <span class="review-date">{{ review.created_at|date:"F j, Y" }}</span>
                     </div>
-                    <div class="review-rating">⭐ {{ review.rating }}/10</div>
+                    <div class="review-rating">⭐ {{ review.rating }}/10.0</div>
                     <p class="review-comment">{{ review.comment }}</p>
                     <div class="review-actions">
                         <a href="{% url 'movies:movie_detail' review.movie.id %}#reviews" class="edit-review-btn">

@@ -22,11 +22,66 @@
                     <span class="stat-label">Reviews Written</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number">{{ user.watchlist.count }}</span>
+                    <span class="stat-number">{{ user.watchlist_movies.count }}</span>
                     <span class="stat-label">Watchlist Items</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.profile-info {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.profile-stats {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.stat-number {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    color: #f5c518;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 14px;
+}
+
+h2, h3 {
+    margin-bottom: 20px;
+    color: #333;
+}
+</style>
 {% endblock %} 

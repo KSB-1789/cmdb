@@ -18,20 +18,29 @@
             <h1>{{ movie.title }}</h1>
             <div class="movie-detail-meta">
                 <span class="movie-detail-year">({{ movie.year }})</span>
-                <span class="movie-detail-rating">{{ movie.rating|floatformat:1 }}/10</span>
+                <span class="movie-detail-rating">{{ movie.rating|floatformat:1 }}/10.0</span>
                 <span class="movie-detail-genre">{{ movie.genre }}</span>
             </div>
 
-            {% if user.is_authenticated %}
-            <form method="POST" action="{% url 'movies:add_to_watchlist' movie.id %}">
-                {% csrf_token %}
-                {% if movie in user.watchlist_movies.all %}
-                <button type="submit" class="watchlist-btn remove">Remove from Watchlist</button>
-                {% else %}
-                <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+            <div class="movie-actions">
+                {% if user.is_authenticated %}
+                    <form method="POST" action="{% url 'movies:add_to_watchlist' movie.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        {% if movie in user.watchlist_movies.all %}
+                        <button type="submit" class="watchlist-btn remove">Remove from Watchlist</button>
+                        {% else %}
+                        <button type="submit" class="watchlist-btn">Add to Watchlist</button>
+                        {% endif %}
+                    </form>
+                    
+                    {% if movie.added_by == user %}
+                    <form method="POST" action="{% url 'movies:delete_movie' movie.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this movie?');">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-btn">Delete Movie</button>
+                    </form>
+                    {% endif %}
                 {% endif %}
-            </form>
-            {% endif %}
+            </div>
 
             {% if user.is_authenticated %}
             <div class="review-form">
@@ -72,4 +81,49 @@
         </div>
     </div>
 </div>
+
+<style>
+.movie-actions {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.watchlist-btn {
+    background-color: #f5c518;
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.watchlist-btn:hover {
+    background-color: #e6b400;
+}
+
+.watchlist-btn.remove {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.watchlist-btn.remove:hover {
+    background-color: #5a6268;
+}
+</style>
 {% endblock %}

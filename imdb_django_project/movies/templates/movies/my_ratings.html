@@ -9,9 +9,16 @@
             {% for review in reviews %}
                 <div class="review-card">
                     <div class="review-header">
-                        <h2><a href="{% url 'movies:movie_detail' review.movie.id %}">{{ review.movie.title }}</a></h2>
-                        <div class="review-meta">
+                        <div class="movie-title">
+                            <h2><a href="{% url 'movies:movie_detail' review.movie.id %}">{{ review.movie.title }}</a></h2>
+                        </div>
+                        <div class="movie-details">
                             <span class="rating">{{ review.rating }}/10</span>
+                            <span class="separator">•</span>
+                            <span class="genre">{{ review.movie.genre }}</span>
+                            <span class="separator">•</span>
+                            <span class="year">({{ review.movie.year }})</span>
+                            <span class="separator">•</span>
                             <span class="date">{{ review.created_at|date:"F j, Y" }}</span>
                         </div>
                     </div>
@@ -20,6 +27,13 @@
                             {{ review.comment }}
                         </div>
                     {% endif %}
+                    <div class="review-actions">
+                        <a href="{% url 'movies:edit_review' review.id %}" style="color: #0066cc; text-decoration: none; margin-right: 10px;">Edit</a>
+                        <form method="POST" action="{% url 'movies:delete_review' review.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" style="background: none; border: none; color: #cc0000; cursor: pointer; padding: 0; font: inherit;" onclick="return confirm('Are you sure?')">Delete</button>
+                        </form>
+                    </div>
                 </div>
             {% endfor %}
         </div>

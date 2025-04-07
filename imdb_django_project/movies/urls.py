@@ -13,4 +13,7 @@ urlpatterns = [
     path('my_ratings/', views.my_ratings, name='my_ratings'),
     path('logout/', views.logout_view, name='logout'),
     path('movie/<int:movie_id>/add_to_watchlist/', views.add_to_watchlist, name='add_to_watchlist'),
+    path('review/<int:review_id>/edit/', views.edit_review, name='edit_review'),
+    path('review/<int:review_id>/delete/', views.delete_review, name='delete_review'),
+    path('movie/<int:movie_id>/delete/', views.delete_movie, name='delete_movie'),
 ]

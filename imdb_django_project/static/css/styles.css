@@ -145,8 +145,8 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--imdb-yellow);
-    color: var(--imdb-black);
+    background-color: #f5c518;
+    color: #000;
 }
 
 .btn-primary:hover {
@@ -168,7 +168,7 @@ body {
 
 .btn-danger {
     background-color: #dc3545;
-    color: var(--imdb-white);
+    color: #fff;
 }
 
 .btn-danger:hover {
@@ -210,9 +210,16 @@ main {
 }
 
 .container {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 2rem;
+}
+
+.container h1 {
+    font-size: 2rem;
+    color: var(--imdb-black);
+    margin-bottom: 2rem;
+    text-align: center;
 }
 
 /* Movie Grid Styles */
@@ -347,56 +354,191 @@ main {
 
 /* Reviews Styles */
 .reviews-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    margin-top: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .review-card {
-    background-color: var(--imdb-white);
-    border: 1px solid #e0e0e0;
+    background: #fff;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
-}
-
-.review-card:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
 }
 
 .review-header {
+    margin-bottom: 15px;
+}
+
+.movie-title h2 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+}
+
+.movie-title h2 a {
+    color: #551A8B;
+    text-decoration: none;
+}
+
+.movie-details {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.movie-details .rating {
+    color: #f5c518;
+    font-weight: bold;
+}
+
+.movie-details .separator {
+    color: #ccc;
+}
+
+.movie-details .genre,
+.movie-details .year,
+.movie-details .date {
+    color: #666;
+}
+
+.review-comment {
+    margin: 15px 0;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.review-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 8px;
+}
+
+.edit-btn, .delete-btn {
+    padding: 4px 12px;
+    border: none;
+    border-radius: 3px;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.edit-btn {
+    background: #f5c518;
+    color: #000;
+    border: none;
+}
+
+.delete-btn {
+    background: #cc0000;
+    color: #fff;
+    border: none;
+}
+
+.edit-btn:hover {
+    background: #e6b400;
+}
+
+.delete-btn:hover {
+    background: #b30000;
+}
+
+/* Movie Info Header */
+.movie-info-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 1rem;
 }
 
-.review-meta {
+.movie-title-section {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.movie-title-section h2 {
+    font-size: 1.25rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.movie-title-section h2 a {
+    color: var(--imdb-black);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.movie-title-section h2 a:hover {
+    color: var(--imdb-yellow);
+}
+
+.movie-title-section .year {
+    color: var(--imdb-light-gray);
+    font-size: 1rem;
+}
+
+.movie-meta {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-.review-meta .rating {
-    font-size: 1.2rem;
+.movie-meta .rating {
     color: var(--imdb-yellow);
+    font-weight: 600;
+    font-size: 1.1rem;
 }
 
-.review-meta .date {
+.movie-meta .genre {
     color: var(--imdb-light-gray);
-    font-size: 0.9rem;
+    font-size: 1rem;
 }
 
-.review-comment {
-    color: var(--imdb-black);
-    line-height: 1.6;
+/* Movie Actions */
+.movie-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.movie-actions form {
+    width: 100%;
+}
+
+.movie-actions .remove-btn {
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid #dc3545;
+    color: #dc3545;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.movie-actions .remove-btn:hover {
+    background-color: #dc3545;
+    color: var(--imdb-white);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
 }
 
 .no-reviews {
     text-align: center;
     color: var(--imdb-light-gray);
     margin-top: 2rem;
+    font-size: 1.1rem;
+    padding: 2rem;
+    background-color: var(--imdb-white);
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
 }
 
 /* Authentication Forms */
@@ -767,4 +909,74 @@ main {
         position: relative;
         top: 0;
     }
+}
+
+.review-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 8px;
+}
+
+.edit-btn, .delete-btn {
+    padding: 4px 12px;
+    border: none;
+    border-radius: 3px;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.edit-btn {
+    background: #f5c518;
+    color: #000;
+    border: none;
+}
+
+.delete-btn {
+    background: #cc0000;
+    color: #fff;
+    border: none;
+}
+
+.edit-btn:hover {
+    background: #e6b400;
+}
+
+.delete-btn:hover {
+    background: #b30000;
+}
+
+.review-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.review-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.review-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.review-form input[type="number"],
+.review-form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.review-form textarea {
+    min-height: 150px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
 } 

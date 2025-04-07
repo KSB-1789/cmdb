@@ -144,3 +144,38 @@ def add_to_watchlist(request, movie_id):
         messages.success(request, f'"{movie.title}" added to your watchlist.')
     
     return redirect('movies:index')
+
+
+@login_required
+def edit_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id, user=request.user)
+    
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your review has been updated!')
+            return redirect('movies:my_ratings')
+    else:
+        form = ReviewForm(instance=review)
+    
+    return render(request, 'movies/edit_review.html', {
+        'form': form,
+        'review': review
+    })
+
+@login_required
+def delete_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id, user=request.user)
+    movie_title = review.movie.title
+    review.delete()
+    messages.success(request, f'Your review for "{movie_title}" has been deleted.')
+    return redirect('movies:my_ratings')
+
+@login_required
+def delete_movie(request, movie_id):
+    movie = get_object_or_404(Movie, id=movie_id, added_by=request.user)
+    movie_title = movie.title
+    movie.delete()
+    messages.success(request, f'"{movie_title}" has been deleted.')
+    return redirect('movies:index')
