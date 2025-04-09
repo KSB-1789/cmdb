@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'movies.apps.MoviesConfig',
     'profiles.apps.ProfilesConfig',
+    'flask_migration',
 ]
 
 AUTH_USER_MODEL = 'profiles.User'
